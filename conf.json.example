@@ -1,0 +1,7 @@
+{
+	"path": "/path/to/data",
+	"port": 8080,
+	"timeout": 14400000,
+	"username": "yourusername",
+	"password": "yourpassword"
+}

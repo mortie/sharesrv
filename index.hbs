@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>hey</title>
+		<link rel="stylesheet" href="/style.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="/js/polyfills.js"></script>
+		<script src="/js/script.js"></script>
+	</head>
+
+	<body>
+		<div id="topbar">
+			{{#if loggedIn}}
+				Welcome
+			{{else}}
+				<form method="POST" action="/login">
+					<input type="text" name="username" placeholder="Username">
+					<input type="password" name="password" placeholder="Password">
+					<button>Log In</button>
+				</form>
+			{{/if}}
+		</div>
+		<div id="view" class="view-{{viewname}}">
+			{{{view}}}
+		</div>
+	</body>
+</html>

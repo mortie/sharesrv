@@ -1,0 +1,43 @@
+<div class="isshared">
+	{{#if isshared}}
+		Shared.
+	{{else}}
+		Not Shared.
+		{{#if loggedIn}}
+			<a class="action" href="/share/{{urlenc base}}">Share</a>
+		{{/if}}
+	{{/if}}
+</div>
+
+<div class="path">
+	{{#if loggedIn}}
+		<a href="/list/">/</a>
+		&gt;
+	{{/if}}
+	{{#each path as |part|}}
+		{{#ifneq @index 0}}
+			&gt;
+		{{/ifneq}}
+		<a href="{{arrdots @index ../path}}">
+			{{part}}
+		</a>
+	{{/each}}
+</div>
+
+<div class="content">
+	{{#each files as |file|}}
+		<div class="entry {{file.type}}">
+			<div class="name">
+				<a href="{{urlenc file.name}}">{{file.name}}</a>
+			</div>
+			<div class="opts">
+				{{#if ../loggedIn}}
+					<a class="action" href="/share/{{urlenc ../base}}{{urlenc file.name}}">Share</a>
+				{{/if}}
+				{{#if file.isfile}}
+					<a class="action" href="javascript:void(0)" onclick="play('{{urlenc file.name}}')">Open</a>
+				{{/if}}
+			</div>
+		</div>
+	{{/each}}
+</div>
