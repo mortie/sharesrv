@@ -202,7 +202,6 @@ app.get("/", function(req, res) {
 });
 
 app.post("/login", function(req, res) {
-	console.log(req.body.username, req.body.password);
 	if (req.body.username === conf.username && req.body.password === conf.password) {
 		req.session.loggedIn = true;
 
@@ -212,7 +211,6 @@ app.post("/login", function(req, res) {
 			redir = referer;
 		else
 			redir = "/";
-		console.log(redir);
 
 		res.writeHead(302, { location: redir });
 		res.end();
