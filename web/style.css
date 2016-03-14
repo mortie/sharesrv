@@ -17,6 +17,8 @@ a:hover {
 
 a.action {
 	text-decoration: underline;
+	color: green;
+	font-weight: bold;
 }
 
 #topbar {
