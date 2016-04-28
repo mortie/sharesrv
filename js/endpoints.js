@@ -66,8 +66,10 @@ var endpoints = {
 			return res.end("You must be logged in to see this.");
 
 		var path = sharer.toAbs(rel);
-		res.setHeaders(fileHeaders(path));
-		res.end();
+		fileHeaders(path, function(headers) {
+			res.setHeaders(headers);
+			res.end();
+		});
 	},
 
 	"get /dl/:rel(*)": function(req, res, sharer) {
