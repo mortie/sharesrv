@@ -22,7 +22,7 @@ function firstline(path, cb) {
 }
 
 function mimefromname(name) {
-	switch (name) {
+	switch (name.toLowerCase()) {
 	case "node":
 	case "nodejs":
 		return "text/javascript";
@@ -39,14 +39,15 @@ function mimefromname(name) {
 }
 
 function mimefromext(ext) {
-	switch (ext) {
-	case "html":
-	case "htm":
-		return "text/html";
+	switch (ext.toLowerCase()) {
 
 	case "pdf":
 		return "application/pdf";
 
+	case "html":
+	case "htm":
+	case "hbs":
+		return "text/html";
 	case "js":
 		return "text/javascript";
 	case "css":
@@ -58,8 +59,16 @@ function mimefromext(ext) {
 		return "text/x-java";
 	case "py":
 		return "text/x-python";
+	case "c":
+	case "h":
+		return "text/x-c";
+	case "cpp":
+	case "hpp":
+		return "text/x-cpp";
 	case "xml":
 		return "text/xml";
+	case "sql":
+		return "text/x-sql";
 	case "txt":
 		return "text/plain";
 
