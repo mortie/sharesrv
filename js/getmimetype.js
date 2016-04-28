@@ -111,14 +111,14 @@ module.exports = function(path, cb) {
 		var trimmed = line.trim();
 
 		if (trimmed.indexOf("#!") === 0) {
-			var nameparts = line.split(" ")[0].split("/");
+			var nameparts = trimmed.split(" ")[0].split("/");
 			var name = nameparts.pop();
 
 			if (name === "env") {
-				var progname = parts.split(" ")[1];
-				cb(getmimefromname(progname));
+				var progname = trimmed.split(" ")[1];
+				cb(mimefromname(progname));
 			} else {
-				cb(getmimefromname(name));
+				cb(mimefromname(name));
 			}
 		} else {
 			cb("application/octet-stream");
