@@ -1,0 +1,39 @@
+<div class="isshared">
+	{{#if isShared}}
+		Shared.
+	{{else}}
+		Not Shared.
+		{{#if loggedIn}}
+			<a class="action" href="/share/{{escape base}}{{escape name}}">Share</a>
+		{{/if}}
+	{{/if}}
+</div>
+
+<div class="path">
+	{{#if loggedIn}}
+		<a href="/list/">/</a>
+		&gt;
+	{{/if}}
+	{{#each path as |part|}}
+		{{#ifneq @index 0}}
+			&gt;
+		{{/ifneq}}
+		<a href="/list/{{escape ../base}}{{arrdots @index ../path}}">
+			{{part}}
+		</a>
+	{{/each}}
+</div>
+
+<a class="action" href="/dl/{{escape base}}{{escape name}}">Download</a>
+
+<div class="content">
+</div>
+
+<script>
+	var content = document.querySelector("#view .content");
+	createViewer("/get/{{escape base}}{{escape name}}", function(err, elem) {
+		if (err) return content.innerHTML = err;
+
+		content.appendChild(elem);
+	});
+</script>

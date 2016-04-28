@@ -7,6 +7,10 @@ body {
 	box-sizing: border-box;
 }
 
+.hljs {
+	background: none !important;
+}
+
 a {
 	color: #222;
 	text-decoration: none;
@@ -43,6 +47,7 @@ a.action {
 	background-color: #eee;
 	padding: 12px;
 	width: calc(100% - 48px);
+	max-width: 1000px;
 	margin: 0px auto;
 	margin-bottom: 24px;
 }
@@ -51,15 +56,15 @@ a.action {
 	box-shadow: 0px 1px 4px 0px #666;
 }
 
-#player-container {
+#popup {
 	-webkit-transition: max-height 0.1s;
 	-moz-transition: max-height 0.1s;
 	transition: max-height 0.1s;
 
+	overflow: hidden;
 	width: 90%;
 	max-width: 1000px;
 	max-height: 0px;
-	overflow-y: auto;
 	margin: auto;
 	position: fixed;
 	top: 50px;
@@ -67,35 +72,36 @@ a.action {
 	right: 0px;
 	background-color: #eee;
 	box-shadow: 0px 1px 4px 0px #666;
-	overflow-y: scroll;
 }
-#player-container>button {
+#popup>.topbar {
+	height: 24px;
+}
+#popup>.content {
+	overflow-y: auto;
+	max-height: calc(100% - 24px);
+}
+#popup>.topbar>button {
 	display: none;
 }
-#player-container.active>button {
+#popup.active>.topbar>button {
 	display: inline;
 }
-#player-container.active {
+#popup.active {
 	-webkit-transition: max-height 1s;
 	-moz-transition: max-height 1s;
 	transition: max-height 1s;
 
 	max-height: 80vh;
 }
-#player-container .elem {
+#popup>.content>.elem {
 	border: none;
 }
-#player-container>button {
-	position: fixed;
-}
-#player-container>div {
-	margin-top: 24px;
-}
 
-#view.view-list .path {
+#view .path {
 	margin-top: 12px;
+	margin-bottom: 12px;
 }
-#view.view-list .path a {
+#view .path a {
 	display: inline-block;
 	min-width: 32px;
 	line-height: 20px;
@@ -137,4 +143,8 @@ a.action {
 		margin-right: 16px;
 		margin-top: 2px;
 	}
+}
+
+#view.view-view .content {
+	margin-top: 6px;
 }

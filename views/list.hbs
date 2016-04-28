@@ -1,10 +1,10 @@
 <div class="isshared">
-	{{#if isshared}}
+	{{#if isShared}}
 		Shared.
 	{{else}}
 		Not Shared.
 		{{#if loggedIn}}
-			<a class="action" href="/share/{{urlenc base}}">Share</a>
+			<a class="action" href="/share/{{escape base}}">Share</a>
 		{{/if}}
 	{{/if}}
 </div>
@@ -28,14 +28,27 @@
 	{{#each files as |file|}}
 		<div class="entry {{file.type}}">
 			<div class="name">
-				<a href="{{urlenc file.name}}">{{file.name}}</a>
+				{{#if file.isDir}}
+					<a href="{{escape file.name}}/">{{file.name}}</a>
+				{{else}}
+					<a href="/view/{{escape ../base}}{{escape file.name}}">{{file.name}}</a>
+				{{/if}}
 			</div>
 			<div class="opts">
 				{{#if ../loggedIn}}
-					<a class="action" href="/share/{{urlenc ../base}}{{urlenc file.name}}">Share</a>
+					{{#if file.isShared}}
+						Shared.
+					{{else}}
+						<a class="action" href="/share/{{escape ../base}}{{escape file.name}}">Share</a>
+					{{/if}}
 				{{/if}}
-				{{#if file.isfile}}
-					<a class="action" href="javascript:void(0)" onclick="play('{{urlenc file.name}}')">Open</a>
+				{{#if file.isFile}}
+				<a
+					class="action"
+					href="javascript:void(0)"
+					onclick="popupView('/dl/{{escape ../base}}{{escape file.name}}')">
+					Open
+				</a>
 				{{/if}}
 			</div>
 		</div>

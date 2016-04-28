@@ -2,16 +2,18 @@ function error(msg) {
 	console.log(msg);
 	alert(msg);
 }
-function player(tag, src, preventActive) {
-	var rm = document.querySelector("#player-container");
+function createPopup(child) {
+	var rm = document.querySelector("#popup");
 	if (rm)
 		rm.parentNode.removeChild(rm);
 
 	var container = document.createElement("div");
-	container.id = "player-container";
-	if (!preventActive) {
-		setTimeout(function() { container.className = "active" }, 10);
-	}
+	container.id = "popup";
+	setTimeout(function() { container.className = "active" }, 10);
+
+	var topbar = document.createElement("div");
+	topbar.className = "topbar";
+	container.appendChild(topbar);
 
 	var closeBtn = document.createElement("button");
 	closeBtn.innerHTML = "X";
@@ -21,69 +23,99 @@ function player(tag, src, preventActive) {
 			container.parentNode.removeChild(container);
 		}, 1000);
 	});
-	container.appendChild(closeBtn);
+	topbar.appendChild(closeBtn);
 
-	var player = document.createElement("div");
-	container.appendChild(player);
+	var content = document.createElement("div");
+	content.className = "content";
+	container.appendChild(content);
+
+	content.appendChild(child);
 
 	document.body.appendChild(container);
+}
+
+function createViewerBase(tag, src) {
+	var base = document.createElement("div");
 
 	var elem = document.createElement(tag);
-	elem.src = location.href+src;
+	if (src)
+		elem.src = src;
 	elem.className = "elem";
 	elem.style =
 		"width: 100%;";
-	player.appendChild(elem);
-
-	elem.show = function() {
-		setTimeout(function() {
-			container.className = "active";
-		}, 100);
-	}
 
 	return elem;
 }
 
 var viewers = {
 	"video": function(path) {
-		var elem = player("video", path);
+		var elem = createViewerBase("video", path);
 		elem.controls = true;
 		elem.play();
+		return elem;
 	},
 
 	"audio": function(path) {
-		var elem = player("audio", path);
+		var elem = createViewerBase("audio", path);
 		elem.controls = true;
 		elem.play();
+		return elem;
 	},
 
 	"image": function(path) {
-		var elem = player("img", path);
+		var elem = createViewerBase("img", path);
+		return elem;
 	},
 
 	"text": function(path) {
-		var elem = player("iframe", path, true);
-		elem.addEventListener("load", function() {
-			var elemBody = elem.contentWindow.document.querySelector("body");
-			elem.height = Math.min(elemBody.scrollHeight, 500);
-			elem.show();
+		var elem = createViewerBase("pre");
+		var code = document.createElement("code");
+		elem.appendChild(code);
+
+		var req = new Request(path);
+		fetch(req, { credentials: "same-origin" }).then(function(res) {
+			var contentType = res.headers.get("content-type");
+			console.log(contentType);
+			res.text().then(function(text) {
+				code.textContent = text;
+				if (contentType !== "text/plain")
+					hljs.highlightBlock(elem);
+			}).catch(error);
 		});
+
+		return elem;
+	},
+
+	"application/pdf": function(path) {
+		var elem = createViewerBase("iframe", path);
+		return elem;
 	}
 }
-function play(path) {
+
+function createViewer(path, cb) {
+	console.log(path);
 	var req = new Request(path, {
 		method: "HEAD"
 	});
 
-	fetch(req).then(function(res) {
+	fetch(req, { credentials: "same-origin" }).then(function(res) {
 		var mime = res.headers.get("Content-Type");
 
 		if (viewers[mime]) {
-			viewers[mime](path);
+			cb(null, viewers[mime](null, path));
 		} else if (viewers[mime.split("/")[0]]) {
-			viewers[mime.split("/")[0]](path);
+			cb(null, viewers[mime.split("/")[0]](path));
 		} else {
-			error("Can't open files of type "+mime);
+			cb("Can't open files of type "+mime);
 		}
 	}).catch(error);
+}
+
+function popupView(path) {
+	console.log(path);
+	createViewer(path, function(err, elem) {
+		if (err) return error(err);
+
+		createPopup(elem);
+	});
 }
