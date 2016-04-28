@@ -35,6 +35,7 @@ function createPopup(child) {
 }
 
 function createViewerBase(tag, src) {
+	console.log("create viewer base with tag "+tag+" and src "+src);
 	var base = document.createElement("div");
 
 	var elem = document.createElement(tag);
@@ -88,6 +89,7 @@ var viewers = {
 
 	"application/pdf": function(path) {
 		var elem = createViewerBase("iframe", path);
+		elem.height = (window.innerHeight * 0.8)+"px";
 		return elem;
 	}
 }
@@ -102,7 +104,7 @@ function createViewer(path, cb) {
 		var mime = res.headers.get("Content-Type");
 
 		if (viewers[mime]) {
-			cb(null, viewers[mime](null, path));
+			cb(null, viewers[mime](path));
 		} else if (viewers[mime.split("/")[0]]) {
 			cb(null, viewers[mime.split("/")[0]](path));
 		} else {
