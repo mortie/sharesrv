@@ -8,17 +8,13 @@ function firstline(path, cb) {
 	var index;
 	var rs = fs.createReadStream(path, {encoding: "utf-8"});
 	rs
-		.on('data', function (chunk) {
+		.on("data", (chunk) => {
 			index = chunk.indexOf('\n');
 			acc += chunk;
 			index !== -1 ? rs.close() : pos += chunk.length;
 		})
-		.on('close', function () {
-			cb(null, acc.slice(0, pos + index));
-		})
-		.on('error', function (err) {
-			cb(err);
-		});
+		.on("close", () => cb(null, acc.slice(0, pos + index)))
+		.on("error", err => cb(err));
 }
 
 function mimefromname(name) {
@@ -104,7 +100,7 @@ module.exports = function(path, cb) {
 	if (mime)
 		return cb(mime);
 
-	firstline(path, function(err, line) {
+	firstline(path, (err, line) => {
 		if (err)
 			return cb("application/octet-stream");
 

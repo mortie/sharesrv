@@ -101,26 +101,27 @@ function Sharer(dir) {
 	 */
 	function readdir(arg, cb) {
 		var rel = toRealRel(arg);
-		fs.readdir(toAbs(rel), function(err, names) {
+		fs.readdir(toAbs(rel), (err, names) => {
 			if (err) return cb(err);
 
 			// Create neat file objects
-			var files = names.map(function(name) {
+			var files = names.map((name) => {
 				var r = pathlib.join(rel, name);
 				return {
 					name: name,
 					rel: r,
+					abs: toAbs(r),
 					stat: null,
-					isShared: function() {
+					isShared: () => {
 						return isShared(r);
 					}
 				}
 			});
 
 			// Stat all the files, because we'll probably need that
-			var promises = files.map(function(file) {
-				return new Promise(function(resolve, reject) {
-					fs.stat(toAbs(file.rel), function(err, stat) {
+			var promises = files.map((file) => {
+				return new Promise((resolve, reject) => {
+					fs.stat(toAbs(file.rel), (err, stat) => {
 						if (err) {
 							file.stat = { err: err }
 						} else {
@@ -132,9 +133,7 @@ function Sharer(dir) {
 			});
 
 			// Call back once all stats are done
-			Promise.all(promises).then(function() {
-				cb(null, files);
-			});
+			Promise.all(promises).then(() => cb(null, files));
 		});
 	}
 

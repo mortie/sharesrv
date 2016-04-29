@@ -130,6 +130,9 @@ a.action {
 #view.view-list .entry.dir .name a {
 	color: blue;
 }
+#view.view-list .entry.file.watched .name a {
+	color: #c00;
+}
 #view.view-list .path .isshared {
 	margin-bottom: 6px;
 }

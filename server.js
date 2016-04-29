@@ -19,7 +19,7 @@ app.use(express.static("web"));
 app.use(require("body-parser").urlencoded({extended: false}));
 app.listen(conf.port);
 
-app.get("*", function(req, res, next) {
+app.get("*", (req, res, next) => {
 	if (req.session.loggedIn === undefined)
 		req.session.loggedIn = false;
 

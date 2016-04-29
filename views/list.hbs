@@ -26,7 +26,7 @@
 
 <div class="content">
 	{{#each files as |file|}}
-		<div class="entry {{file.type}}">
+		<div class="entry {{file.type}} {{#if file.isWatched}}watched{{/if}}">
 			<div class="name">
 				{{#if file.isDir}}
 					<a href="{{escape file.name}}/">{{file.name}}</a>
@@ -46,7 +46,7 @@
 				<a
 					class="action"
 					href="javascript:void(0)"
-					onclick="popupView('/dl/{{escape ../base}}{{escape file.name}}')">
+					onclick="popupView('/get/{{escape ../base}}{{escape file.name}}')">
 					Open
 				</a>
 				{{/if}}

@@ -5,18 +5,18 @@ var fs = require("fs");
 module.exports = template;
 
 //Custom helpers
-handlebars.registerHelper("escape", function(val, options) {
+handlebars.registerHelper("escape", (val, options) => {
 	return escape(val);
 });
-handlebars.registerHelper("ifeq", function(val1, val2, options) {
+handlebars.registerHelper("ifeq", (val1, val2, options) => {
 	if (val1 === val2)
 		return options.fn(this);
 });
-handlebars.registerHelper("ifneq", function(val1, val2, options) {
+handlebars.registerHelper("ifneq", (val1, val2, options) => {
 	if (val1 !== val2)
 		return options.fn(this);
 });
-handlebars.registerHelper("arrdots", function(index, arr, options) {
+handlebars.registerHelper("arrdots", (index, arr, options) => {
 	var str = "";
 	for (var i = index + 1, l = arr.length; i < l; ++i) {
 		str += "../";

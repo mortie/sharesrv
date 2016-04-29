@@ -6,7 +6,7 @@ var getmimetype = require("./getmimetype");
 var streamfile = require("./streamfile");
 
 function fileHeaders(path, cb) {
-	getmimetype(path, function(mime) {
+	getmimetype(path, (mime) => {
 		var name = path.match(/\/[^\/]+$/)[0].substring(1);
 		cb({
 			"content-type": mime,
@@ -17,9 +17,9 @@ function fileHeaders(path, cb) {
 }
 
 var endpoints = {
-	"get /": function(req, res) { res.redirect("/list/") },
+	"get /": (req, res) => { res.redirect("/list/") },
 
-	"post /login": function(req, res, sharer, conf) {
+	"post /login": (req, res, sharer, conf) => {
 		if ((req.body.username === conf.username)
 		&&  (req.body.password === conf.password)) {
 			req.session.loggedIn = true;
@@ -39,7 +39,7 @@ var endpoints = {
 		}
 	},
 
-	"get /share/:rel(*)": function(req, res, sharer, conf) {
+	"get /share/:rel(*)": (req, res, sharer, conf) => {
 		var rel = req.params.rel || "/";
 
 		if (!req.hasPermission(rel))
@@ -48,43 +48,43 @@ var endpoints = {
 		var key = sharer.share(rel, conf.timeout);
 
 		var path = sharer.toAbs(rel);
-		fs.stat(path, function(err, stat) {
+		fs.stat(path, (err, stat) => {
 			if (err)
 			return res.error(err);
 
-		if (stat.isDirectory())
-			res.redirect("/list/"+key);
-		else
-			res.redirect("/view/"+key);
+			if (stat.isDirectory())
+				res.redirect("/list/"+key);
+			else
+				res.redirect("/view/"+key);
 		});
 	},
 
-	"head /dl/:rel(*)": function(req, res, sharer) {
+	"head /dl/:rel(*)": (req, res, sharer) => {
 		var rel = req.params.rel || "/";
 
 		if (!req.hasPermission(rel))
 			return res.end("You must be logged in to see this.");
 
 		var path = sharer.toAbs(rel);
-		fileHeaders(path, function(headers) {
+		fileHeaders(path, (headers) => {
 			res.setHeaders(headers);
 			res.end();
 		});
 	},
 
-	"get /dl/:rel(*)": function(req, res, sharer) {
+	"get /dl/:rel(*)": (req, res, sharer) => {
 		var rel = req.params.rel || "/";
 
 		if (!req.hasPermission(rel))
 			return res.errs.notLoggedIn();
 
 		var path = sharer.toAbs(rel);
-		fileHeaders(path, function(headers) {
+		fileHeaders(path, (headers) => {
 			streamfile(req, res.res, path, headers);
 		});
 	},
 
-	"get /get/:rel(*)": function(req, res, sharer) {
+	"get /get/:rel(*)": (req, res, sharer) => {
 		var rel = req.params.rel || "/";
 
 		if (!req.hasPermission(rel))
@@ -92,14 +92,14 @@ var endpoints = {
 
 		var path = sharer.toAbs(rel);
 
-		getmimetype(path, function(mime) {
+		getmimetype(path, (mime) => {
 			streamfile(req, res.res, path, {
 				"content-type": mime
 			});
 		});
 	},
 
-	"get /view/:rel(*)": function(req, res, sharer, conf) {
+	"get /view/:rel(*)": (req, res, sharer, conf) => {
 		var rel = req.params.rel || "/";
 
 		// Don't allow people who aren't logged in to see
@@ -125,7 +125,7 @@ var endpoints = {
 		});
 	},
 
-	"get /list/:rel(*)?": function(req, res, sharer, conf) {
+	"get /list/:rel(*)?": (req, res, sharer, conf) => {
 		var rel = req.params.rel || "/";
 
 		// We need a / at the end because we're listing a directory.
@@ -137,23 +137,42 @@ var endpoints = {
 		if (!req.hasPermission(rel))
 			return res.errs.notLoggedIn();
 
-		sharer.readdir(rel, function(err, files) {
+		sharer.readdir(rel, (err, files) => {
 			if (err) return res.error(err);
+
+			// Get a .vids file if it exists
+			var watched = [];
+			var watchedFile = files.filter(f => f.name === ".vids")[0];
+			if (watchedFile) {
+				fs.readFile(watchedFile.abs, "utf-8", (err, content) => {
+					watched = content.split("\n");
+					draw(files, watched)
+				});
+			} else {
+				draw(files, watched);
+			}
+		});
+
+		function draw(files, watched) {
+
+			// Remove broken files
+			files = files.filter(f => !f.stat.err);
 
 			// Transform the file objects into something
 			// the template understands
 			files = files.map(file => {
 				return {
 					name: file.name,
-				  type: file.stat.isFile() ? "file" : "dir",
-				  isDir: file.stat.isDirectory(),
-				  isFile: file.stat.isFile(),
-				  isShared: file.isShared()
+					type: file.stat.isFile() ? "file" : "dir",
+					isDir: file.stat.isDirectory(),
+					isFile: file.stat.isFile(),
+					isShared: file.isShared(),
+					isWatched: watched.indexOf(file.name) !== -1
 				}
 			});
 
 			// Sort alphabetically, with dirs on top and files below
-			files.sort(function(a, b) {
+			files.sort((a, b) => {
 				if (a.type === "file" && b.type === "dir")
 				return 1;
 				else if (a.type === "dir" && b.type === "file")
@@ -170,7 +189,7 @@ var endpoints = {
 				isShared: sharer.isShared(rel),
 				loggedIn: req.session.loggedIn
 			});
-		});
+		}
 	}
 }
 
@@ -185,9 +204,9 @@ module.exports = function(sharer, conf, app) {
 		var target = parts[1];
 
 		// Add the endpoint, and add some utility functions
-		app[method](target, function(req, res) {
+		app[method](target, (req, res) => {
 
-			req.hasPermission = function(rel) {
+			req.hasPermission = (rel) => {
 				return req.session.loggedIn || sharer.isShared(rel || "/");
 			}
 
@@ -199,16 +218,16 @@ module.exports = function(sharer, conf, app) {
 				"content-type": "text/html"
 			},
 
-			redirect: function(loc) {
+			redirect: (loc) => {
 				res.writeHead(302, { location: loc });
 				res.end();
 			},
 
-			template: function(name, ctx) {
+			template: (name, ctx) => {
 				response.end(template(name, req.session, ctx));
 			},
 
-			error: function(err) {
+			error: (err) => {
 				response.template("err", { msg: err });
 			},
 
@@ -217,22 +236,22 @@ module.exports = function(sharer, conf, app) {
 					response.error("You must be logged in to see this.")
 			},
 
-			writeHead: function() {
+			writeHead: () => {
 				res.writeHead(response.status, response.headers);
 			},
 
-			setHeaders: function(obj) {
+			setHeaders: (obj) => {
 				for (var i in obj) {
 					response.headers[i] = obj[i].toLowerCase();
 				}
 			},
 
-			end: function(str) {
+			end: (str) => {
 				response.writeHead();
 				res.end(str);
 			},
 
-			write: function(str) {
+			write: (str) => {
 				res.write(str);
 			}
 			}

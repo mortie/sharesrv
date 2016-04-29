@@ -3,7 +3,7 @@ var fs = require("fs");
 module.exports = streamfile;
 
 function streamfile(req, res, path, customHeaders) {
-	fs.stat(path, function(err, stat) {
+	fs.stat(path, (err, stat) => {
 		if (err)
 			return res.end(err.toString());
 
