@@ -78,7 +78,7 @@ a.action {
 }
 #popup>.content {
 	overflow-y: auto;
-	max-height: calc(100% - 24px);
+	max-height: calc(80vh - 24px);
 }
 #popup>.topbar>button {
 	display: none;
@@ -136,7 +136,7 @@ a.action {
 #view.view-list .path .isshared {
 	margin-bottom: 6px;
 }
-@media screen and (min-width: 1000px) {
+@media screen and (min-width: 600px) {
 	#view.view-list .entry .name {
 		display: inline-block;
 	}

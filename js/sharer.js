@@ -77,7 +77,10 @@ function Sharer(dir) {
 			file.resetTimeout();
 			return file.key;
 		} else {
-			var key = crypto.randomBytes(8).toString("hex");
+			var key = crypto.createHash("sha1")
+				.update(rel)
+				.digest("base64")
+				.substring(0, 20);
 
 			var file = SharedFile(rel, ttl, key);
 			shared[key] = file;

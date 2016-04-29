@@ -15,14 +15,11 @@
 		&gt;
 	{{/if}}
 	{{#each path as |part|}}
-		{{#ifneq @index 0}}
-			&gt;
-		{{/ifneq}}
 		<a href="/list/{{escape ../base}}{{arrdots @index ../path}}">
 			{{part}}
 		</a>
+		&gt;
 	{{/each}}
-	&gt;
 	<a href="/view/{{escape base}}{{escape name}}">{{name}}</a>
 </div>
 

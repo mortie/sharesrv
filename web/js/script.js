@@ -60,6 +60,9 @@ var viewers = {
 		var elem = createViewerBase("audio", path);
 		elem.controls = true;
 		elem.play();
+		elem.style =
+			"margin: 12px;"+
+			"width: calc(100% - 24px);";
 		return elem;
 	},
 
